@@ -12,35 +12,16 @@
     <input name="username" placeholder="Usuário">
     <input name="password" type="password" placeholder="Senha">
 
-    <video id="video" autoplay width="250"></video>
+    <button onclick="registerUser()">Criar conta</button>
 
-    <button class="secondary-btn" onclick="startCamera()">Abrir câmera</button>
-    <button onclick="sendData()">Registrar</button>
+    <video id="video" autoplay></video>
+
+    <button class="secondary" onclick="startCamera()">Abrir câmera</button>
+    <button onclick="registerFace()">Registrar rosto</button>
 
     <p><a href="/">Voltar</a></p>
 </div>
 
 <script src="/static/script.js"></script>
-
-<script>
-async function sendData() {
-    const image = captureImage();
-    if (!image) return;
-
-    await fetch("/register_face", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            username: document.querySelector("input[name=username]").value,
-            password: document.querySelector("input[name=password]").value,
-            image: image
-        })
-    });
-
-    alert("Usuário registrado!");
-    window.location.href = "/";
-}
-</script>
-
 </body>
 </html>

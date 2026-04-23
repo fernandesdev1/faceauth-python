@@ -1,16 +1,14 @@
-let videoStream = null;
+let stream;
 
+// camera
 async function startCamera() {
     const video = document.getElementById("video");
 
-    try {
-        videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = videoStream;
-    } catch (err) {
-        alert("Erro ao acessar câmera: " + err);
-    }
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
 }
 
+// captura
 function captureImage() {
     const video = document.getElementById("video");
 
@@ -29,30 +27,81 @@ function captureImage() {
     return canvas.toDataURL("image/jpeg");
 }
 
-async function login() {
-    const image = captureImage();
-    if (!image) return;
-
-    const username = document.querySelector("input[name=username]").value;
-    const password = document.querySelector("input[name=password]").value;
-
-    const res = await fetch("/login_face", {
+async function loginUser() {
+    const res = await fetch("/login_user", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            username,
-            password,
-            image
+            username: document.querySelector("input[name=username]").value,
+            password: document.querySelector("input[name=password]").value
         })
     });
 
     const data = await res.json();
 
     if (data.success) {
-        alert("✅ " + data.message);
+        window.location.href = "/verify";
     } else {
-        alert("❌ " + data.message);
+        alert(data.message);
+    }
+}
+
+async function verifyFace() {
+    const image = captureImage();
+    if (!image) return;
+
+    const res = await fetch("/verify_face", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ image })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        window.location.href = "/dashboard";
+    } else {
+        alert(data.message);
+    }
+}
+
+async function registerUser() {
+    const res = await fetch("/register_user", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            username: document.querySelector("input[name=username]").value,
+            password: document.querySelector("input[name=password]").value
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        alert("Conta criada! Agora registre seu rosto.");
+    } else {
+        alert(data.message);
+    }
+}
+
+async function registerFace() {
+    const image = captureImage();
+    if (!image) return;
+
+    const res = await fetch("/register_face", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            username: document.querySelector("input[name=username]").value,
+            password: document.querySelector("input[name=password]").value,
+            image
+        })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    if (data.success) {
+        window.location.href = "/";
     }
 }
