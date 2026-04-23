@@ -15,6 +15,9 @@ data/faces/
 *.jpg
 *.png
 
+*.db
+data/*.db
+
 *.log
 
 .DS_Store
