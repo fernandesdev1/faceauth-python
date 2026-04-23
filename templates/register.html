@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Registro</h2>
+
+    <input name="username" placeholder="Usuário">
+    <input name="password" type="password" placeholder="Senha">
+
+    <video id="video" autoplay width="250"></video>
+
+    <button class="secondary-btn" onclick="startCamera()">Abrir câmera</button>
+    <button onclick="sendData()">Registrar</button>
+
+    <p><a href="/">Voltar</a></p>
+</div>
+
+<script src="/static/script.js"></script>
+
+<script>
+async function sendData() {
+    const image = captureImage();
+    if (!image) return;
+
+    await fetch("/register_face", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            username: document.querySelector("input[name=username]").value,
+            password: document.querySelector("input[name=password]").value,
+            image: image
+        })
+    });
+
+    alert("Usuário registrado!");
+    window.location.href = "/";
+}
+</script>
+
+</body>
+</html>
