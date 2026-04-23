@@ -1,7 +1,12 @@
 import sqlite3
+import os
+
+DB_PATH = "data/users.db"
 
 def connect():
-    return sqlite3.connect("data/users.db")
+    os.makedirs("data", exist_ok=True)
+    return sqlite3.connect(DB_PATH)
+
 
 def create_table():
     conn = connect()
