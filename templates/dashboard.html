@@ -6,7 +6,8 @@
 <body>
 
 <h1>Bem-vindo!</h1>
-<a href="/logout">Sair</a>
+<h2>{{ session['user'] }}, Verificado com sucesso!</h2>
+<button onclick="window.location.href='/logout'">Sair</button>
 
 </body>
 </html>

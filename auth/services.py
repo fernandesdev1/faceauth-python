@@ -24,18 +24,46 @@ def register_user(username, password, image_data):
     conn = connect()
     cursor = conn.cursor()
 
-    try:
-        cursor.execute(
-            "INSERT INTO users (username, password, face_encoding) VALUES (?, ?, ?)",
-            (username, password, pickle.dumps(encoding))
-        )
-        conn.commit()
-    except:
-        return False, "Usuário já existe"
-    finally:
-        conn.close()
+    cursor.execute(
+        "UPDATE users SET face_encoding = ? WHERE username = ?",
+        (pickle.dumps(encoding), username)
+    )
 
-    return True, "Usuário registrado com sucesso"
+    conn.commit()
+    conn.close()
+
+    return True, "Rosto registrado com sucesso"
+
+
+def login_face_only(username, image_data):
+    conn = connect()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT face_encoding FROM users WHERE username = ?",
+        (username,)
+    )
+
+    user = cursor.fetchone()
+    conn.close()
+
+    if not user or user[0] is None:
+        return False, "Rosto não cadastrado"
+
+    saved_encoding = pickle.loads(user[0])
+
+    img = base64_to_image(image_data)
+    encoding = get_face_encoding(img)
+
+    if encoding is None:
+        return False, "Rosto não detectado"
+
+    match = face_recognition.compare_faces([saved_encoding], encoding)[0]
+
+    if match:
+        return True, "Verificação concluída"
+    
+    return False, "Rosto não reconhecido"
 
 
 def login_user(username, password, image_data):

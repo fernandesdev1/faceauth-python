@@ -8,7 +8,6 @@ auth_routes = Blueprint("auth", __name__)
 def login_page():
     return render_template("login.html")
 
-
 @auth_routes.route("/register")
 def register_page():
     return render_template("register.html")
@@ -24,6 +23,11 @@ def dashboard():
 
     return render_template("dashboard.html")
 
+@auth_routes.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+    
 @auth_routes.route("/verify_face", methods=["POST"])
 def verify_face():
     if "temp_user" not in session:
